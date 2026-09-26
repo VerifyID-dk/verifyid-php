@@ -10,8 +10,8 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * En PSR-18-klient der svarer med det man har lagt i koe, og husker hvad den fik.
- * Proeverne maaler paa REQUESTS: headers, sti, krop. Ingen netvaerk.
+ * En PSR-18-klient der svarer med det man har lagt i kø, og husker hvad den fik.
+ * Prøverne måler på REQUESTS: headers, sti, krop. Ingen netværk.
  */
 final class FakeHttp implements ClientInterface
 {
@@ -40,7 +40,7 @@ final class FakeHttp implements ClientInterface
         $this->sendt[] = $request;
 
         if ($this->svar === []) {
-            throw new \LogicException('FakeHttp har ikke flere svar i koe: ' . $request->getMethod() . ' ' . $request->getUri());
+            throw new \LogicException('FakeHttp har ikke flere svar i kø: ' . $request->getMethod() . ' ' . $request->getUri());
         }
 
         return array_shift($this->svar);

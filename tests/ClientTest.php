@@ -15,7 +15,7 @@ final class ClientTest extends TestCase
 {
     private FakeHttp $http;
 
-    private function client(string $key = 'noegle-123', array $options = []): Client
+    private function client(string $key = 'nøgle-123', array $options = []): Client
     {
         $this->http = new FakeHttp();
         $factory = new Psr17Factory();
@@ -35,11 +35,11 @@ final class ClientTest extends TestCase
         $svar = $client->request('POST', '/api/v1/kontrakter', ['skabelonId' => 'æøå', 'parter' => []]);
 
         $req = $this->http->sidste();
-        self::assertSame('Bearer noegle-123', $req->getHeaderLine('Authorization'));
+        self::assertSame('Bearer nøgle-123', $req->getHeaderLine('Authorization'));
         self::assertSame('application/json', $req->getHeaderLine('Content-Type'));
         self::assertSame('https://kyc.verifyid.dk/api/v1/kontrakter', (string) $req->getUri());
         self::assertStringContainsString('verifyid-php/', $req->getHeaderLine('User-Agent'));
-        /* Unicode og skraastreger sendes som de er, ikke som \u-koder */
+        /* Unicode og skråstreger sendes som de er, ikke som \u-koder */
         self::assertSame('{"skabelonId":"æøå","parter":[]}', (string) $req->getBody());
         self::assertSame('k1', $svar['kontraktId']);
     }

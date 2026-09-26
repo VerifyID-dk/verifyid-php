@@ -92,12 +92,12 @@ final class ContractsTest extends TestCase
         $client = $this->client();
         $this->http->json(201, ['ok' => true, 'kontraktId' => 'k3']);
 
-        $svar = $client->contracts()->createFromDocument('aftale.pdf', '%PDF-1.7', ['parter' => [['navn' => 'A']]], 'noegle-1');
+        $svar = $client->contracts()->createFromDocument('aftale.pdf', '%PDF-1.7', ['parter' => [['navn' => 'A']]], 'nøgle-1');
 
         $req = $this->http->sidste();
         self::assertSame('k3', $svar['kontraktId']);
         self::assertSame('/api/v1/kontrakter/dokument', $req->getUri()->getPath());
-        self::assertSame('noegle-1', $req->getHeaderLine('Idempotency-Key'));
+        self::assertSame('nøgle-1', $req->getHeaderLine('Idempotency-Key'));
         self::assertStringStartsWith('multipart/form-data; boundary=', $req->getHeaderLine('Content-Type'));
         self::assertStringContainsString('filename="aftale.pdf"', (string) $req->getBody());
     }

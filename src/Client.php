@@ -24,8 +24,8 @@ use VerifyID\Exception\TransportException;
  * Guzzle installeret, bruges den af sig selv; ellers giver du din egen klient
  * og dine egne fabrikker med i `$options`.
  *
- *     $client = new Client('din-noegle');                 // drift
- *     $client = Client::test('din-testnoegle');           // testmiljoe
+ *     $client = new Client('din-nøgle');                 // drift
+ *     $client = Client::test('din-testnøgle');           // testmiljø
  *
  *     $client->eid()->...
  *     $client->contracts()->...
@@ -35,10 +35,10 @@ final class Client
 {
     public const VERSION = '0.1.0';
 
-    /** Driftsmiljoeet. Noeglen kommer fra portalen under API. */
+    /** Driftsmiljøet. Nøglen kommer fra portalen under API. */
     public const BASE_URL = 'https://kyc.verifyid.dk';
 
-    /** Testmiljoeet. Testnoegler virker kun her og paa endpoints med proevetilstand. */
+    /** Testmiljøet. Testnøgler virker kun her og på endpoints med prøvetilstand. */
     public const TEST_BASE_URL = 'https://kyctesting.verifyid.dk';
 
     private readonly string $baseUrl;
@@ -51,7 +51,7 @@ final class Client
     private ?Webhook $webhook = null;
 
     /**
-     * @param string $apiKey  Din API-noegle. Den hoerer paa serveren, aldrig i browseren.
+     * @param string $apiKey  Din API-nøgle. Den hører på serveren, aldrig i browseren.
      * @param array{
      *     base_url?: string,
      *     http_client?: ClientInterface,
@@ -62,7 +62,7 @@ final class Client
     public function __construct(private readonly string $apiKey, array $options = [])
     {
         if (trim($apiKey) === '') {
-            throw new ConfigurationException('API-noeglen er tom. Hent den i portalen under API.');
+            throw new ConfigurationException('API-nøglen er tom. Hent den i portalen under API.');
         }
 
         $this->baseUrl = rtrim($options['base_url'] ?? self::BASE_URL, '/');
@@ -73,7 +73,7 @@ final class Client
         $this->streams = $streams;
     }
 
-    /** En klient mod testmiljoeet, kyctesting.verifyid.dk. */
+    /** En klient mod testmiljøet, kyctesting.verifyid.dk. */
     public static function test(string $apiKey, array $options = []): self
     {
         return new self($apiKey, ['base_url' => self::TEST_BASE_URL] + $options);
@@ -89,7 +89,7 @@ final class Client
         return $this->contracts ??= new Contracts($this);
     }
 
-    /** Verificering af webhooks. De er signeret med den samme noegle som klienten bruger. */
+    /** Verificering af webhooks. De er signeret med den samme nøgle som klienten bruger. */
     public function webhook(): Webhook
     {
         return $this->webhook ??= new Webhook($this->apiKey);
@@ -107,8 +107,8 @@ final class Client
      * @param array<string, string>     $headers  Ekstra headers, fx `Idempotency-Key`.
      * @return array<string, mixed>
      *
-     * @throws ApiException       naar API'et svarer med en fejl (`ok: false`)
-     * @throws TransportException naar kaldet ikke naar frem eller svaret ikke er JSON
+     * @throws ApiException       når API'et svarer med en fejl (`ok: false`)
+     * @throws TransportException når kaldet ikke når frem eller svaret ikke er JSON
      */
     public function request(string $method, string $path, ?array $json = null, array $headers = []): array
     {
@@ -153,7 +153,7 @@ final class Client
             return $body;
         }
 
-        /* En fejl kommer altid som JSON, ogsaa paa en filrute */
+        /* En fejl kommer altid som JSON, også på en filrute */
         throw $this->apiException($status, $body);
     }
 
@@ -205,7 +205,7 @@ final class Client
     /** @param array<string, string> $extra */
     private function standardHeaders(array $extra): array
     {
-        /* De givne headers vinder over standarderne, saa fx Accept kan skiftes til application/pdf */
+        /* De givne headers vinder over standarderne, så fx Accept kan skiftes til application/pdf */
         return $extra + [
             'Authorization' => 'Bearer ' . $this->apiKey,
             'Accept' => 'application/json',
@@ -219,7 +219,7 @@ final class Client
             return $this->http->sendRequest($request);
         } catch (ClientExceptionInterface $e) {
             throw new TransportException(
-                'Kaldet til VerifyID kunne ikke gennemfoeres: ' . $e->getMessage(),
+                'Kaldet til VerifyID kunne ikke gennemføres: ' . $e->getMessage(),
                 0,
                 $e,
             );

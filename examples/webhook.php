@@ -1,9 +1,9 @@
 <?php
 /**
- * Et webhook-endpoint. Peg VerifyID paa den her fil (https, og vaerten paa noeglens domaeneliste).
+ * Et webhook-endpoint. Peg VerifyID på den her fil (https, og værten på nøglens domæneliste).
  *
- * Verificer FOER du laeser noget i kroppen. Svar 2xx med det samme og goer arbejdet bagefter;
- * et langsomt svar udloeser et nyt forsoeg, og den samme besked kan komme mere end een gang.
+ * Verificer FØR du læser noget i kroppen. Svar 2xx med det samme og gør arbejdet bagefter;
+ * et langsomt svar udløser et nyt forsøg, og den samme besked kan komme mere end een gang.
  */
 
 declare(strict_types=1);
@@ -16,13 +16,13 @@ use VerifyID\Webhook;
 $webhook = new Webhook(getenv('VERIFYID_KEY') ?: '');
 
 try {
-    $besked = $webhook->verifyFromGlobals();   // laeser php://input og headers selv
+    $besked = $webhook->verifyFromGlobals();   // læser php://input og headers selv
 } catch (SignatureException $e) {
     http_response_code(400);
     exit($e->getMessage());
 }
 
-http_response_code(200);   // kvitter foerst
+http_response_code(200);   // kvitter først
 fastcgi_finish_request();  // (kun PHP-FPM) slip forbindelsen, arbejd videre
 
 switch ($besked['haendelse']) {
@@ -36,6 +36,6 @@ switch ($besked['haendelse']) {
     case 'kontrakt.annulleret':
         break;
     case 'verifikation.gennemfoert':
-        // et KYC-link er faerdigt: $besked['verifikation'] er id'et, $besked['reference'] dit eget
+        // et KYC-link er færdigt: $besked['verifikation'] er id'et, $besked['reference'] dit eget
         break;
 }

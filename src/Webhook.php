@@ -9,29 +9,29 @@ use VerifyID\Exception\SignatureException;
 /**
  * Verificering af webhooks fra VerifyID.
  *
- * Hver besked er signeret med DIN API-noegle. Der er ingen anden hemmelighed
+ * Hver besked er signeret med DIN API-nøgle. Der er ingen anden hemmelighed
  * at udveksle, og en anden konto kan ikke verificere en besked der ikke er
  * deres. Tre headers:
  *
  *   X-VerifyID-Signatur   HMAC-SHA256 som hex
  *   X-VerifyID-Tid        Unix-tidsstempel i sekunder, en del af det signerede
- *   X-VerifyID-Haendelse  haendelsen, den samme som `haendelse` i kroppen
+ *   X-VerifyID-Haendelse  hændelsen, den samme som `haendelse` i kroppen
  *
  * Signaturen regnes som
  *
- *     HMAC-SHA256(tid . "." . krop, din-noegle)
+ *     HMAC-SHA256(tid . "." . krop, din-nøgle)
  *
- * over den RAA krop, byte for byte. Parser du JSON foerst og signerer det igen,
- * passer signaturen ikke: feltraekkefoelge og mellemrum er en del af det
- * signerede. Laes derfor `php://input` og giv den ubehandlet videre.
+ * over den RÅ krop, byte for byte. Parser du JSON først og signerer det igen,
+ * passer signaturen ikke: feltrækkefølge og mellemrum er en del af det
+ * signerede. Læs derfor `php://input` og giv den ubehandlet videre.
  *
- * Beskeder aeldre end 300 sekunder afvises. Uden den graense kan en opsnappet
+ * Beskeder ældre end 300 sekunder afvises. Uden den grænse kan en opsnappet
  * besked sendes igen senere. Den samme besked KAN komme mere end een gang (fx
- * hvis dit 2xx ikke naaede os), saa brug id'et og haendelsen sammen som noegle
+ * hvis dit 2xx ikke nåede os), så brug id'et og hændelsen sammen som nøgle
  * og spring en gentagelse over.
  *
- * Svar 2xx med det samme, og goer arbejdet bagefter. Et langsomt svar udloeser
- * et nyt forsoeg; vi proever fem gange med stigende mellemrum.
+ * Svar 2xx med det samme, og gør arbejdet bagefter. Et langsomt svar udløser
+ * et nyt forsøg; vi prøver fem gange med stigende mellemrum.
  */
 final class Webhook
 {
@@ -39,7 +39,7 @@ final class Webhook
     public const HEADER_TIMESTAMP = 'X-VerifyID-Tid';
     public const HEADER_EVENT = 'X-VerifyID-Haendelse';
 
-    /** Saa gammel maa en besked vaere, i sekunder. Det samme tal som API-dokumentationen. */
+    /** Så gammel må en besked være, i sekunder. Det samme tal som API-dokumentationen. */
     public const DEFAULT_TOLERANCE = 300;
 
     public function __construct(
@@ -51,14 +51,14 @@ final class Webhook
     /**
      * Verificerer en besked og giver kroppen tilbage som array.
      *
-     * @param string                $rawBody  Den raa krop, fx `file_get_contents('php://input')`.
-     * @param array<string, mixed>  $headers  Headers med navn => vaerdi. Navne sammenlignes uden
-     *                                        hensyn til store og smaa bogstaver, og en vaerdi maa
-     *                                        vaere en liste (som PSR-7 giver den).
-     * @param int|null              $now      Nuvaerende tid i sekunder. Kun til proever.
+     * @param string                $rawBody  Den rå krop, fx `file_get_contents('php://input')`.
+     * @param array<string, mixed>  $headers  Headers med navn => værdi. Navne sammenlignes uden
+     *                                        hensyn til store og små bogstaver, og en værdi må
+     *                                        være en liste (som PSR-7 giver den).
+     * @param int|null              $now      Nuværende tid i sekunder. Kun til prøver.
      * @return array<string, mixed>  Kroppen afkodet. `haendelse` siger hvad der skete.
      *
-     * @throws SignatureException  naar en header mangler, tiden er for gammel, eller signaturen ikke passer.
+     * @throws SignatureException  når en header mangler, tiden er for gammel, eller signaturen ikke passer.
      */
     public function verify(string $rawBody, array $headers, ?int $now = null): array
     {
@@ -80,14 +80,14 @@ final class Webhook
 
         if (abs($nu - $tid) > $this->toleranceSeconds) {
             throw new SignatureException(
-                'Beskeden er ' . abs($nu - $tid) . ' sekunder gammel; graensen er ' . $this->toleranceSeconds . '.',
+                'Beskeden er ' . abs($nu - $tid) . ' sekunder gammel; grænsen er ' . $this->toleranceSeconds . '.',
             );
         }
 
         $expected = self::sign($rawBody, $tid, $this->apiKey);
 
         if (!hash_equals($expected, strtolower(trim($signature)))) {
-            throw new SignatureException('Signaturen passer ikke. Er det den rigtige noegle, og er kroppen raa?');
+            throw new SignatureException('Signaturen passer ikke. Er det den rigtige nøgle, og er kroppen rå?');
         }
 
         $decoded = json_decode($rawBody, true);
@@ -100,7 +100,7 @@ final class Webhook
     }
 
     /**
-     * Den nemme vej i et almindeligt PHP-endpoint: laeser `php://input` og request-headers selv.
+     * Den nemme vej i et almindeligt PHP-endpoint: læser `php://input` og request-headers selv.
      *
      * @return array<string, mixed>
      *
@@ -114,7 +114,7 @@ final class Webhook
         return $this->verify($raw === false ? '' : $raw, is_array($headers) ? $headers : []);
     }
 
-    /** Regner signaturen ud. Offentlig, saa du kan lave en gyldig besked i dine egne proever. */
+    /** Regner signaturen ud. Offentlig, så du kan lave en gyldig besked i dine egne prøver. */
     public static function sign(string $rawBody, int $timestamp, string $apiKey): string
     {
         return hash_hmac('sha256', $timestamp . '.' . $rawBody, $apiKey);
@@ -141,7 +141,7 @@ final class Webhook
     }
 
     /**
-     * Headers fra `$_SERVER` (HTTP_X_VERIFYID_TID -> X-Verifyid-Tid) naar `getallheaders` ikke findes.
+     * Headers fra `$_SERVER` (HTTP_X_VERIFYID_TID -> X-Verifyid-Tid) når `getallheaders` ikke findes.
      *
      * @param array<string, mixed> $server
      * @return array<string, string>

@@ -7,9 +7,9 @@ namespace VerifyID\Exception;
 /**
  * API'et svarede med en fejl.
  *
- * `getKode()` er den maskinlaesbare kode fra dokumentationen, fx
+ * `getKode()` er den maskinlæsbare kode fra dokumentationen, fx
  * `findes_ikke`, `kontrakt_ikke_faerdig`, `for_mange_kald`, `ingen_domaener`,
- * `noegle_genbrugt`. `getMessage()` er beskeden skrevet til den der laeser
+ * `noegle_genbrugt`. `getMessage()` er beskeden skrevet til den der læser
  * loggen. `getStatus()` er HTTP-statussen.
  */
 final class ApiException extends VerifyIDException
@@ -44,13 +44,13 @@ final class ApiException extends VerifyIDException
         return $this->kode === 'findes_ikke';
     }
 
-    /** Du kaldte for tit. Vent og proev igen. */
+    /** Du kaldte for tit. Vent og prøv igen. */
     public function isRateLimited(): bool
     {
         return $this->kode === 'for_mange_kald';
     }
 
-    /** Aftalen er ikke faerdig endnu, eller bliver det aldrig. Beskeden siger hvilket. */
+    /** Aftalen er ikke færdig endnu, eller bliver det aldrig. Beskeden siger hvilket. */
     public function isContractNotReady(): bool
     {
         return $this->kode === 'kontrakt_ikke_faerdig';

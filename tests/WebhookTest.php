@@ -25,7 +25,7 @@ final class WebhookTest extends TestCase
 
     public function testSignaturenRegnesSomTidPunktumKropMedNoeglen(): void
     {
-        /* Regnet i haanden med samme formel som serveren: HMAC-SHA256("1700000000." . krop, noegle) */
+        /* Regnet i hånden med samme formel som serveren: HMAC-SHA256("1700000000." . krop, nøgle) */
         self::assertSame(
             hash_hmac('sha256', '1700000000.' . self::KROP, self::NOEGLE),
             Webhook::sign(self::KROP, 1700000000, self::NOEGLE),
@@ -57,7 +57,7 @@ final class WebhookTest extends TestCase
 
     public function testEnForkertNoegleAfvises(): void
     {
-        $webhook = new Webhook('en-anden-noegle');
+        $webhook = new Webhook('en-anden-nøgle');
         $tid = 1700000000;
 
         $this->expectException(SignatureException::class);

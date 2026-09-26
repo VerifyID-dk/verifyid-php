@@ -8,29 +8,29 @@ use VerifyID\Exception\ApiException;
 use VerifyID\Exception\TransportException;
 
 /**
- * eID-verifikation: "log ind med MitID" paa din egen side.
+ * eID-verifikation: "log ind med MitID" på din egen side.
  *
- * Forloebet er tre skridt, og din server staar for det foerste og det sidste:
+ * Forløbet er tre skridt, og din server står for det første og det sidste:
  *
  *   1. `startLogin()` opretter et opslag og giver en URL. Send personen derhen.
- *   2. Personen bekraefter hos MitID og kommer tilbage til din `redirect_url`
- *      med `?lookup_id=<id>` paa adressen.
- *   3. `result()` henter udfaldet server-til-server med din noegle. Adressen
- *      i browseren beviser ingenting; det goer kun svaret fra API'et.
+ *   2. Personen bekræfter hos MitID og kommer tilbage til din `redirect_url`
+ *      med `?lookup_id=<id>` på adressen.
+ *   3. `result()` henter udfaldet server-til-server med din nøgle. Adressen
+ *      i browseren beviser ingenting; det gør kun svaret fra API'et.
  *
- * Hvor meget du faar at vide, afgoeres af `scope`:
+ * Hvor meget du får at vide, afgøres af `scope`:
  *
- *   status      kun at personen ER bekraeftet, ingen felter
+ *   status      kun at personen ER bekræftet, ingen felter
  *   alder_over  om personen er over `age_limit`, ikke hvor gammel
- *   alder       foedselsdato
- *   basis       navn og foedselsdato
+ *   alder       fødselsdato
+ *   basis       navn og fødselsdato
  *   fuld        alt udbyderen giver
  *
  * Se tabellen i API-dokumentationen. Bed kun om det du skal bruge.
  */
 final class Eid
 {
-    /** Navnet paa parameteren personen kommer tilbage med paa din redirect_url. */
+    /** Navnet på parameteren personen kommer tilbage med på din redirect_url. */
     public const LOOKUP_ID_PARAMETER = 'lookup_id';
 
     public const STATUS_STARTED = 'paabegyndt';
@@ -45,7 +45,7 @@ final class Eid
     /**
      * Starter et login: opretter et eID-opslag og giver adressen personen skal sendes til.
      *
-     * @param string $redirectUrl  Hvor personen lander bagefter. Vaerten skal staa paa noeglens domaeneliste.
+     * @param string $redirectUrl  Hvor personen lander bagefter. Værten skal stå på nøglens domæneliste.
      * @param array{
      *     method?: string,
      *     scope?: string,
@@ -76,9 +76,9 @@ final class Eid
     }
 
     /**
-     * Opretter et opslag med praecis den krop du selv bygger. `startLogin()` er den nemme vej.
+     * Opretter et opslag med præcis den krop du selv bygger. `startLogin()` er den nemme vej.
      *
-     * @param array<string, mixed> $payload  `method` og `scope` er paakraevede.
+     * @param array<string, mixed> $payload  `method` og `scope` er påkrævede.
      * @return array<string, mixed>  Feltet `lookup` fra svaret: id, url, expires_at, scope, method, reference.
      *
      * @throws ApiException
@@ -92,7 +92,7 @@ final class Eid
     }
 
     /**
-     * Laeser opslagets id af adressen personen kom tilbage paa. Null naar det mangler.
+     * Læser opslagets id af adressen personen kom tilbage på. Null når det mangler.
      *
      * @param array<string, mixed> $query  Typisk `$_GET`.
      */
@@ -107,10 +107,10 @@ final class Eid
      * Henter udfaldet af et opslag.
      *
      * @return array<string, mixed>  Feltet `lookup`: id, status, method, scope, age_limit, reference,
-     *                               result (null indtil gennemfoert, og altid null ved scope `status`),
+     *                               result (null indtil gennemført, og altid null ved scope `status`),
      *                               reason, created_at, expires_at, completed_at.
      *
-     * @throws ApiException  `findes_ikke` naar id'et ikke er dit eller ikke findes.
+     * @throws ApiException  `findes_ikke` når id'et ikke er dit eller ikke findes.
      * @throws TransportException
      */
     public function result(string $lookupId): array
@@ -120,13 +120,13 @@ final class Eid
         return is_array($svar['lookup'] ?? null) ? $svar['lookup'] : [];
     }
 
-    /** Sandt naar personen er bekraeftet. Det er det ENE der betyder "logget ind". */
+    /** Sandt når personen er bekræftet. Det er det ENE der betyder "logget ind". */
     public static function isCompleted(array $lookup): bool
     {
         return ($lookup['status'] ?? null) === self::STATUS_COMPLETED;
     }
 
-    /** Sandt naar personen fortroed, eller udbyderen sagde nej. Ikke en fejl hos dig. */
+    /** Sandt når personen fortrød, eller udbyderen sagde nej. Ikke en fejl hos dig. */
     public static function isCancelled(array $lookup): bool
     {
         return ($lookup['status'] ?? null) === self::STATUS_CANCELLED;

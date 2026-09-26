@@ -1,8 +1,8 @@
 <?php
 /**
- * Send en kontrakt til underskrift fra en skabelon, og hent PDF'en naar den er faerdig.
+ * Send en kontrakt til underskrift fra en skabelon, og hent PDF'en når den er færdig.
  *
- *   VERIFYID_KEY=din-testnoegle php examples/kontrakt.php
+ *   VERIFYID_KEY=din-testnøgle php examples/kontrakt.php
  */
 
 declare(strict_types=1);
@@ -16,8 +16,8 @@ $client = Client::test(getenv('VERIFYID_KEY') ?: '');
 
 /* Hvilke skabeloner har jeg, og hvilke variabler skal de have? */
 foreach ($client->contracts()->templates() as $skabelon) {
-    $noegler = array_column($skabelon['variabler'], 'noegle');
-    echo $skabelon['skabelonId'], '  ', $skabelon['navn'], '  variabler: ', implode(', ', $noegler), PHP_EOL;
+    $felter = array_column($skabelon['variabler'], 'nøgle');
+    echo $skabelon['skabelonId'], '  ', $skabelon['navn'], '  variabler: ', implode(', ', $felter), PHP_EOL;
 }
 
 $skabelonId = $argv[1] ?? null;
@@ -26,7 +26,7 @@ if ($skabelonId === null) {
     exit;
 }
 
-/* Send den. Idempotency-Key goer et genforsoeg ufarligt: samme noegle = samme kontrakt. */
+/* Send den. Idempotency-Key gør et genforsøg ufarligt: samme nøgle = samme kontrakt. */
 $kontrakt = $client->contracts()->createFromTemplate([
     'skabelonId' => $skabelonId,
     'parter' => [
@@ -35,7 +35,7 @@ $kontrakt = $client->contracts()->createFromTemplate([
     'variabler' => ['virksomhed' => 'Eksempel ApS'],
     'levering' => 'link',                       // 'email' hvis VerifyID skal sende invitationen
     'reference' => 'ordre-7',
-    'webhook' => 'https://din-side.dk/verifyid/webhook',  // skal vaere https og paa noeglens domaeneliste
+    'webhook' => 'https://din-side.dk/verifyid/webhook',  // skal være https og på nøglens domæneliste
 ], 'ordre-7-kontrakt');
 
 echo PHP_EOL, 'Kontrakt ', $kontrakt['kontraktId'], ' (', $kontrakt['status'], ')', PHP_EOL;
@@ -49,13 +49,13 @@ foreach ($kontrakt['parter'] as $part) {
 //     'levering' => 'email',
 // ]);
 
-/* Den underskrevne PDF findes foerst naar alle har skrevet under; foer det svarer API'et 409. */
+/* Den underskrevne PDF findes først når alle har skrevet under; før det svarer API'et 409. */
 try {
     file_put_contents('underskrevet.pdf', $client->contracts()->pdf($kontrakt['kontraktId']));
     echo 'PDF gemt som underskrevet.pdf', PHP_EOL;
 } catch (ApiException $e) {
     if ($e->isContractNotReady()) {
-        echo 'Ikke faerdig endnu: ', $e->getMessage(), PHP_EOL;   // vent paa kontrakt.faerdig paa webhooken
+        echo 'Ikke færdig endnu: ', $e->getMessage(), PHP_EOL;   // vent på kontrakt.faerdig på webhooken
     } else {
         throw $e;
     }

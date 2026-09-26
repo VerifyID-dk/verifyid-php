@@ -12,11 +12,11 @@ use VerifyID\Exception\TransportException;
  *
  * To veje ind: en skabelon fra portalen (`createFromTemplate`) eller din egen
  * PDF (`createFromDocument`). Begge giver et kontrakt-id og parterne tilbage;
- * med `levering: link` faar du underskriftslinkene selv og sender dem, med
+ * med `levering: link` får du underskriftslinkene selv og sender dem, med
  * `levering: email` sender vi.
  *
- * Udfaldet kommer paa webhooken (`kontrakt.part.underskrevet`,
- * `kontrakt.part.afvist`, `kontrakt.faerdig`, ...), og den faerdige PDF med
+ * Udfaldet kommer på webhooken (`kontrakt.part.underskrevet`,
+ * `kontrakt.part.afvist`, `kontrakt.faerdig`, ...), og den færdige PDF med
  * underskriftssiden hentes med `pdf()`. Se `Webhook` for signaturen.
  */
 final class Contracts
@@ -44,10 +44,10 @@ final class Contracts
      *     webhook?: string,
      *     reference?: string
      * } $data
-     * @param string|null $idempotencyKey  Din egen noegle for kaldet, hoejst 200 tegn. Sender du det samme
-     *                                     kald igen med den samme noegle, faar du det samme svar og ikke
-     *                                     en kontrakt mere. Brug den ved genforsoeg.
-     * @return array<string, mixed>  kontraktId, titel, status, udloeber, reference, parter[], sendtTil
+     * @param string|null $idempotencyKey  Din egen nøgle for kaldet, højst 200 tegn. Sender du det samme
+     *                                     kald igen med den samme nøgle, får du det samme svar og ikke
+     *                                     en kontrakt mere. Brug den ved genforsøg.
+     * @return array<string, mixed>  kontraktId, titel, status, udløber, reference, parter[], sendtTil
      *
      * @throws ApiException
      * @throws TransportException
@@ -62,8 +62,8 @@ final class Contracts
      *
      * @param string               $fileName   Filnavnet, fx `aftale.pdf`.
      * @param string               $fileBytes  Filens indhold.
-     * @param array<string, mixed> $data       `parter` er paakraevet; `levering`, `udloeberDage`, `titel`,
-     *                                         `webhook`, `reference` som paa skabelonen.
+     * @param array<string, mixed> $data       `parter` er påkrævet; `levering`, `udloeberDage`, `titel`,
+     *                                         `webhook`, `reference` som på skabelonen.
      * @return array<string, mixed>
      *
      * @throws ApiException
@@ -88,14 +88,14 @@ final class Contracts
     }
 
     /**
-     * Status paa en kontrakt: hvem har skrevet under, og med hvilket navn.
+     * Status på en kontrakt: hvem har skrevet under, og med hvilket navn.
      *
-     * `parter[].underskrevetNavn` er navnet eID bekraeftede, og det er det der
-     * staar paa underskriften i PDF'en. `parter[].navn` er det du sendte.
+     * `parter[].underskrevetNavn` er navnet eID bekræftede, og det er det der
+     * står på underskriften i PDF'en. `parter[].navn` er det du sendte.
      *
      * @return array<string, mixed>
      *
-     * @throws ApiException  `findes_ikke` naar kontrakten ikke er din.
+     * @throws ApiException  `findes_ikke` når kontrakten ikke er din.
      * @throws TransportException
      */
     public function get(string $contractId): array
@@ -104,12 +104,12 @@ final class Contracts
     }
 
     /**
-     * Den underskrevne PDF med underskriftssiden. Findes foerst naar alle har skrevet under.
+     * Den underskrevne PDF med underskriftssiden. Findes først når alle har skrevet under.
      *
      * @return string  PDF-bytes.
      *
-     * @throws ApiException  `kontrakt_ikke_faerdig` mens der mangler underskrifter, eller naar aftalen er
-     *                       afvist eller udloebet og aldrig bliver faerdig. Beskeden siger hvilket.
+     * @throws ApiException  `kontrakt_ikke_faerdig` mens der mangler underskrifter, eller når aftalen er
+     *                       afvist eller udløbet og aldrig bliver færdig. Beskeden siger hvilket.
      * @throws TransportException
      */
     public function pdf(string $contractId): string
@@ -120,7 +120,7 @@ final class Contracts
     }
 
     /**
-     * Traekker en aftale tilbage. Parterne kan ikke skrive under bagefter, og webhooken faar `kontrakt.annulleret`.
+     * Trækker en aftale tilbage. Parterne kan ikke skrive under bagefter, og webhooken får `kontrakt.annulleret`.
      *
      * @return array<string, mixed>
      *
@@ -148,7 +148,7 @@ final class Contracts
     }
 
     /**
-     * En skabelons felter, saa du ved hvad `variabler` skal indeholde.
+     * En skabelons felter, så du ved hvad `variabler` skal indeholde.
      *
      * @return array<string, mixed>
      *
@@ -168,7 +168,7 @@ final class Contracts
         }
 
         if (strlen($key) > 200) {
-            throw new \InvalidArgumentException('Idempotency-Key maa hoejst vaere 200 tegn.');
+            throw new \InvalidArgumentException('Idempotency-Key må højst være 200 tegn.');
         }
 
         return ['Idempotency-Key' => $key];
