@@ -36,6 +36,6 @@ switch ($besked['haendelse']) {
     case 'kontrakt.annulleret':
         break;
     case 'verifikation.gennemfoert':
-        // et eID-opslag eller KYC-forloeb er faerdigt; $besked['reference'] er dit id
+        // et KYC-link er faerdigt: $besked['verifikation'] er id'et, $besked['reference'] dit eget
         break;
 }

@@ -16,7 +16,8 @@ $client = Client::test(getenv('VERIFYID_KEY') ?: '');
 
 /* Hvilke skabeloner har jeg, og hvilke variabler skal de have? */
 foreach ($client->contracts()->templates() as $skabelon) {
-    echo $skabelon['skabelonId'], '  ', $skabelon['navn'], '  variabler: ', implode(', ', $skabelon['variabler']), PHP_EOL;
+    $noegler = array_column($skabelon['variabler'], 'noegle');
+    echo $skabelon['skabelonId'], '  ', $skabelon['navn'], '  variabler: ', implode(', ', $noegler), PHP_EOL;
 }
 
 $skabelonId = $argv[1] ?? null;
