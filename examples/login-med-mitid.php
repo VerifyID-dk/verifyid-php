@@ -5,12 +5,13 @@
  *   /login/start   starter et opslag og sender personen til MitID
  *   /login/retur   personen kommer tilbage hertil; vi henter udfaldet med nøglen
  *
- * Kør den lokalt med den indbyggede server og en testnøgle fra kyctesting.verifyid.dk:
+ * redirect_url skal være https, også under udvikling. Kør den lokalt bag en tunnel
+ * (fx `cloudflared tunnel --url http://localhost:8080`) og giv tunnelens adresse med:
  *
- *   VERIFYID_KEY=din-testnøgle php -S localhost:8080 examples/login-med-mitid.php
+ *   VERIFYID_KEY=din-testnøgle VERIFYID_RETUR=https://<tunnel>/login/retur \
+ *       php -S localhost:8080 examples/login-med-mitid.php
  *
- * Testnøglens domæneliste skal indeholde `localhost` (eller den vært du bruger),
- * ellers svarer API'et `ingen_domaener` på redirect_url.
+ * Nøglens domæneliste må ikke være tom, ellers svarer API'et `ingen_domaener`.
  */
 
 declare(strict_types=1);
@@ -24,7 +25,7 @@ use VerifyID\Exception\ApiException;
 session_start();
 
 $client = Client::test(getenv('VERIFYID_KEY') ?: '');
-$retur = 'http://localhost:8080/login/retur';
+$retur = getenv('VERIFYID_RETUR') ?: 'https://din-side.dk/login/retur';
 $sti = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 
 if ($sti === '/login/start') {

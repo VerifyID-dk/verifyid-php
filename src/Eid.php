@@ -45,7 +45,7 @@ final class Eid
     /**
      * Starter et login: opretter et eID-opslag og giver adressen personen skal sendes til.
      *
-     * @param string $redirectUrl  Hvor personen lander bagefter. Værten skal stå på nøglens domæneliste.
+     * @param string $redirectUrl  Hvor personen lander bagefter. Skal være en absolut https-adresse uden #fragment.
      * @param array{
      *     method?: string,
      *     scope?: string,

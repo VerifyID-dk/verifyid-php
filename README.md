@@ -15,7 +15,7 @@ Guzzle er valgfri. Uden den giver du din egen PSR-18-klient og PSR-17-fabrikker 
 ## Før du starter
 
 1. Lav en API-nøgle i portalen under **API**. Den hører på serveren, ikke i browseren og ikke i git.
-2. Skriv dine domæner på nøglens **domæneliste**. Værten i `redirect_url`, `cancel_url` og `webhook` skal stå der. Er listen tom, er ingen adresser tilladt, og API'et svarer `ingen_domaener`.
+2. Skriv dine domæner på nøglens **domæneliste**. Er listen tom, afvises hvert kald med `ingen_domaener`. Værten i en `webhook` skal stå på listen. `redirect_url` og `cancel_url` ved eID-login må ligge på et hvilket som helst domæne, men skal være https.
 3. Test på **kyctesting.verifyid.dk** med en testnøgle (`Client::test(...)`). Drift er **kyc.verifyid.dk** (`new Client(...)`). En testnøgle virker ikke i drift.
 
 ```php
